@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.data/
+.playwright-mcp/
+.playwright-mcp
+
+.DS_Store
+docs/screenshots/
+
+# Local first-pass audit captures may contain stale failures.
+docs/*-initial.json
+scroll-craft-main/
+scrollcraft/builds/

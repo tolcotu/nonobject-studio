@@ -1,0 +1,16 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {calculateEstimate} from '../src/domain/pricing.js';
+import {enquirySchema,imageType} from '../src/domain/validation.js';
+const product={id:'test-1',productName:'Test product',sku:'TEST',platforms:['Amazon'],productInformation:'A real test product.',imageCount:9,imageFormatsAndSizes:'Confirm for selected platforms'};
+const enquiry={submissionKey:crypto.randomUUID(),contactName:'Test',email:'test@example.com',country:'Poland',rushRequested:false,consent:true,website:'',products:[product]};
+test('exactly 9 images uses the approved €65 package',()=>assert.equal(calculateEstimate([{imageCount:9}]).total,65));
+test('other approved quantities use €10 each',()=>{assert.equal(calculateEstimate([{imageCount:3}]).total,30);assert.equal(calculateEstimate([{imageCount:8}]).total,80);});
+test('sums SKUs without rounding three packages to the order minimum',()=>{const e=calculateEstimate([{imageCount:9},{imageCount:9},{imageCount:9}]);assert.equal(e.total,195);assert.equal(e.belowMinimum,true);});
+test('rush adds exactly 30%, while order-minimum check remains on image scope',()=>{const e=calculateEstimate([{imageCount:9},{imageCount:9},{imageCount:9}],true);assert.equal(e.total,253.5);assert.equal(e.rushAmount,58.5);assert.equal(e.belowMinimum,true);});
+test('10+ images explicitly require a manual quote',()=>{const e=calculateEstimate([{imageCount:10},{imageCount:9}],true);assert.equal(e.total,null);assert.equal(e.manual,true);assert.equal(e.knownSubtotal,65);});
+test('blocks invalid quantities',()=>{for(const imageCount of [0,2,-1,3.5,101,NaN])assert.throws(()=>calculateEstimate([{imageCount}]));});
+test('valid enquiry accepted and optional fields default safely',()=>{const p=enquirySchema.parse(enquiry);assert.equal(p.companyName,'');assert.equal(p.products[0].listingUrl,'');});
+test('blocks missing contact, platform, info, consent and unsupported URLs',()=>{for(const change of [{email:'bad'},{contactName:''},{country:''},{consent:false},{website:'spam'},{products:[{...product,imageCount:2}]},{products:[{...product,platforms:[]}]},{products:[{...product,listingUrl:'javascript:alert(1)'}]},{products:[{...product,productInformation:''}]}])assert.equal(enquirySchema.safeParse({...enquiry,...change}).success,false);});
+test('duplicate SKUs and IDs rejected',()=>{assert.equal(enquirySchema.safeParse({...enquiry,products:[product,{...product,id:'different'}]}).success,false);assert.equal(enquirySchema.safeParse({...enquiry,products:[product,{...product,sku:'other'}]}).success,false);});
+test('signature rejects files disguised as images',()=>{assert.equal(imageType(Buffer.from('<script>alert(1)</script>')),null);assert.equal(imageType(Buffer.from([137,80,78,71,13,10,26,10,0,0,0,0])),'image/png');});

@@ -1,0 +1,44 @@
+[
+  {
+    "name": "desktop",
+    "overflow": false,
+    "broken": [],
+    "errors": [],
+    "accessibility": []
+  },
+  {
+    "name": "large",
+    "overflow": false,
+    "broken": [],
+    "errors": [],
+    "accessibility": []
+  },
+  {
+    "name": "tablet",
+    "overflow": false,
+    "broken": [],
+    "errors": [],
+    "accessibility": []
+  },
+  {
+    "name": "mobile",
+    "overflow": false,
+    "broken": [],
+    "errors": [],
+    "accessibility": []
+  },
+  {
+    "name": "compact",
+    "overflow": false,
+    "broken": [],
+    "errors": [],
+    "accessibility": []
+  },
+  {
+    "name": "reduced",
+    "overflow": false,
+    "broken": [],
+    "errors": [],
+    "accessibility": []
+  }
+]

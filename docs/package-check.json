@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "errors": [],
+  "failures": [],
+  "checks": [
+    "production assets loaded",
+    "production form initialized",
+    "private paths return 404",
+    "unconfigured production enquiries return 503",
+    "no-JavaScript layout styled and form disabled"
+  ]
+}

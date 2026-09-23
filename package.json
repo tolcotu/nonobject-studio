@@ -1,0 +1,28 @@
+{
+  "name": "nonobject-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server/index.js",
+    "build": "vite build",
+    "start": "NODE_ENV=production node server/index.js",
+    "test": "node --test tests/*.test.js",
+    "verify": "node scripts/verify.mjs",
+    "retry-notifications": "node scripts/retry-notifications.mjs",
+    "build:pages": "node scripts/build-pages.mjs"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "nodemailer": "^10.0.10",
+    "sharp": "^0.35.4",
+    "vite": "^7.1.7",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "playwright": "^1.55.1"
+  }
+}

@@ -1,0 +1,45 @@
+import {chromium} from 'playwright';
+import AxeBuilder from '@axe-core/playwright';
+import {spawn} from 'node:child_process';
+import {mkdtemp,rm,writeFile,readdir,readFile} from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const dir=await mkdtemp(path.join(os.tmpdir(),'nonobject-browser-'));
+const child=spawn(process.execPath,['server/index.js'],{env:{...process.env,PORT:'5174',DATA_DIR:dir,ENQUIRIES_ENABLED:'false',PUBLIC_ORIGIN:'http://localhost:5174',NODE_ENV:'development'},stdio:'pipe'});
+let browser;
+try {
+ for(let i=0;i<50;i++){try{if((await fetch('http://localhost:5174/api/config')).ok)break;}catch{}await new Promise(r=>setTimeout(r,100));}
+ browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+ const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
+ await context.addInitScript(()=>{Element.prototype.requestPointerLock=()=>{};Element.prototype.setPointerCapture=()=>{};});
+ const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://localhost:5174',{waitUntil:'networkidle'});
+ await page.getByRole('button',{name:'Where does it fit?',exact:true}).click();assert.equal(await page.locator('#visual-direction').inputValue(),'Context');
+ await page.locator('[data-study=blue]').click();assert.equal(await page.locator('#study-dialog').evaluate(d=>d.open),true);await page.keyboard.press('Escape');assert.equal(await page.locator('#study-dialog').evaluate(d=>d.open),false);
+ await page.getByText('Can I combine different products?',{exact:false}).click();assert.equal(await page.locator('details').filter({hasText:'Can I combine different products?'}).getAttribute('open'),'');
+ await page.locator('#contact-name').fill('Preview Tester');await page.locator('[name=email]').fill('preview@example.com');await page.locator('[name=country]').fill('Poland');
+ let first=page.locator('.product-block').first();await first.locator('[data-field=productName]').fill('Bottle');await first.locator('[data-field=sku]').fill('BOTTLE-001');await first.locator('[data-field=productInformation]').fill('An orange aluminum product with a screw cap.');
+ await page.locator('[name=consent]').check();await page.locator('#submit-enquiry').click();assert.match(await page.locator('#form-errors').textContent(),/at least one/);
+ await first.locator('input[type=file]').setInputFiles({name:'bad.txt',mimeType:'text/plain',buffer:Buffer.from('not an image')});assert.match(await first.locator('.file-error').textContent(),/use JPG/);
+ await first.locator('input[type=file]').setInputFiles('public/assets/hero-object-small.webp');
+ await page.locator('#add-product').click();const second=page.locator('.product-block').nth(1);await second.locator('[data-field=productName]').fill('Headphones');await second.locator('[data-field=sku]').fill('SOUND-002');await second.locator('[data-field=productInformation]').fill('Ivory headphones with soft cushions.');await second.locator('input[type=file]').setInputFiles('public/assets/sound-study-small.webp');await second.locator('[data-platform=Shopify]').check();assert.equal(await page.locator('#estimate-total').textContent(),'€130.00');
+ await page.locator('#rush').check();assert.equal(await page.locator('#estimate-total').textContent(),'€169.00');
+ await second.locator('[data-field=imageCount]').fill('2');await page.locator('#submit-enquiry').click();assert.equal(await second.locator('[data-field=imageCount]').evaluate(e=>e.validity.rangeUnderflow),true);
+ await second.locator('[data-field=imageCount]').fill('10');assert.equal(await page.locator('#estimate-total').textContent(),'Custom quote');await second.locator('[data-field=imageCount]').fill('9');
+ await page.route('**/api/enquiries',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'Test connection interruption. Please retry.'})}),{times:1});
+ await page.locator('#submit-enquiry').click();await page.locator('#form-errors').filter({hasText:'Test connection interruption'}).waitFor();assert.equal(await page.locator('.file-list li').count(),2);assert.equal(await page.locator('#contact-name').inputValue(),'Preview Tester');
+ const beforeAxe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
+ await page.locator('#submit-enquiry').click();await page.locator('#form-success').waitFor();assert.match(await page.locator('#form-success').textContent(),/preview brief is saved/);assert.match(await page.locator('#form-success').textContent(),/not been sent/);
+ const downloadPromise=page.waitForEvent('download');await page.locator('#download-summary').click();const download=await downloadPromise;assert.match(download.suggestedFilename(),/NONOBJECT-NO-/);
+ const dirs=await readdir(path.join(dir,'enquiries'));assert.equal(dirs.length,1);const record=JSON.parse(await readFile(path.join(dir,'enquiries',dirs[0],'enquiry.json'),'utf8'));assert.equal(record.products.length,2);assert.equal(record.products[0].files.length,1);assert.equal(record.products[1].files.length,1);assert.equal(record.estimate.total,169);assert.equal(record.visualDirection,'Context');assert.deepEqual(record.notifications,{});
+ await page.screenshot({path:'docs/screenshots/form-success.png'});
+ await page.locator('#new-enquiry').click();assert.equal(await page.locator('.product-block').count(),1);assert.equal(await page.locator('#contact-name').inputValue(),'');await page.locator('#add-product').click();assert.equal(await page.locator('.product-block').count(),2);await page.locator('.product-block').last().getByRole('button',{name:'Remove product'}).click();assert.equal(await page.locator('.product-block').count(),1);
+ await page.locator('[data-legal=privacy]').last().click();assert.equal(await page.locator('#legal-dialog').evaluate(d=>d.open),true);await page.keyboard.press('Escape');
+ await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.locator('.menu-toggle').click();assert.equal(await page.locator('.menu-toggle').getAttribute('aria-expanded'),'true');await page.locator('#main-nav a[href="#pricing"]').click();assert.equal(await page.locator('.menu-toggle').getAttribute('aria-expanded'),'false');
+ await page.locator('#project').evaluate(el=>window.scrollTo({top:el.offsetTop,behavior:'instant'}));await page.screenshot({path:'docs/screenshots/mobile-form.png'});
+ const afterAxe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
+ const nojs=await browser.newContext({javaScriptEnabled:false});await nojs.addInitScript(()=>{Element.prototype.requestPointerLock=()=>{};Element.prototype.setPointerCapture=()=>{};});const p=await nojs.newPage();await p.goto('http://localhost:5174');assert.equal(await p.locator('#project-fields').getAttribute('disabled'),'');assert.equal(await p.locator('#submit-enquiry').isDisabled(),true);assert.equal(await p.locator('#project-form').getAttribute('method'),'post');await nojs.close();
+ const results={passed:errors.length===0&&beforeAxe.violations.length===0&&afterAxe.violations.length===0,checks:['buyer direction carries to form','gallery opens and Escape closes','FAQ opens','missing photos blocked','invalid file rejected','two products preserve independent files','rush and custom pricing update','minimum image validation','failed request retains values and uploads','retry saves exactly one enquiry','summary downloads','success accurately labels local storage','new brief resets','product removal preserves remaining SKU','privacy dialog keyboard closure','mobile menu navigation','no-JavaScript form disabled and never GET'],errors,accessibility:[...beforeAxe.violations,...afterAxe.violations].map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)}))};
+ await writeFile('docs/interactions.json',JSON.stringify(results,null,2));console.log(JSON.stringify(results,null,2));
+ assert.equal(errors.length,0);assert.equal(results.accessibility.length,0);
+} finally {await browser?.close();child.kill('SIGTERM');await new Promise(r=>child.once('exit',r));await rm(dir,{recursive:true,force:true});}

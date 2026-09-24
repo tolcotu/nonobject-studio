@@ -15,3 +15,16 @@
  .hero{min-height:610px}.hero-art{width:62%;left:24%;top:69px}.hero-caption{top:237px;font-size:7px;padding:7px}.hero-copy{top:305px}.hero-copy h1{font-size:30px;margin-bottom:11px}.hero-copy p{font-size:11px;line-height:1.5;max-width:38ch}.hero-actions{margin-top:17px;gap:16px}.hero-actions .button{min-height:42px;padding:13px}.hero-offer{bottom:53px}.hero-bottom{font-size:7px}.hero-offer p{font-size:21px}
  .story-stage{min-height:100svh}.story-top{font-size:7px}.story h2{top:58px;font-size:40px}.story-composition{top:141px;height:260px;width:76%;left:15%}.story-controls{bottom:42px}.story-controls>p:first-child{font-size:10px;margin-bottom:7px}.question-buttons button{font-size:9px;padding:6px}.story-controls #direction-caption{font-size:10px;margin-top:9px;min-height:28px}.story-controls .text-link{font-size:9px;margin-top:2px}.story-disclaimer{font-size:7px;bottom:12px;max-width:none}.story-caption{font-size:7px}
 }
+
+/* Real project boards are kept fully visible so listing copy and product detail remain legible. */
+.work-large .work-image{aspect-ratio:1.34}
+.work-item.work-object .work-image{background:#e6e2d9;aspect-ratio:1.14}
+.work-item .work-image>img{object-fit:contain;padding:10px;transform:none;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.work-item.work-object .work-image>img{width:100%;height:100%;position:static;left:auto;bottom:auto;transform:none}
+@media(hover:hover) and (pointer:fine){.work-item:hover .work-image>img{transform:scale(1.025)}.work-item.work-object:hover .work-image>img{transform:scale(1.025)}}
+#study-image{width:100%;height:min(55svh,760px);object-fit:contain;background:#e6e2d9}
+.study-gallery-controls{display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 20px;border-top:1px solid var(--line)}
+.study-gallery-controls button{width:44px;height:44px;background:var(--ink);color:var(--paper);font-size:22px;line-height:1;transition:background .2s}
+.study-gallery-controls button:hover{background:#44443e}
+.study-gallery-controls span{min-width:60px;text-align:center;font-size:11px;font-variant-numeric:tabular-nums}
+@media(max-width:700px){.work-large .work-image{aspect-ratio:1.2}.work-item .work-image>img{padding:7px}#study-image{height:34svh}.study-gallery-controls{padding:10px 15px}}

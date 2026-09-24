@@ -23,7 +23,7 @@ These observations concern the screenshot compositions. No claim is made that th
 - Paper #F2F1EC, ink #20201E, bright orange #FF5A1F, muted supporting neutrals.
 - Archivo Black for the oversized wordmark; neutral Arial/Helvetica text for readable service information.
 - Independent image planes overlap typography; the recognizable bottle-and-chrome silhouette returns in the interactive study and close.
-- Three generated original studio concepts. Every gallery item is explicitly identified as a concept, not a client case study.
+- Generated imagery is used for the hero and interactive visual study. Three separate galleries now show actual supplied studio work: an Amazon sieve listing, a baking-dish listing, and a serving-tray listing. Client names and performance claims remain absent because they were not supplied.
 - No autoplay video or audio. Native scrolling is retained. The supplied scroll-craft engine is copied unchanged.
 
 ## Signature and motion
@@ -37,7 +37,7 @@ The hero uses independent subject and foreground-caption movement. The page also
 - Minimum-order status is checked against image scope before a provisional rush surcharge, so rush alone cannot silently qualify an undersized order. Confirm this interpretation.
 - The form accepts an enquiry below €200 with an explicit minimum warning; it never treats the enquiry as checkout.
 - Upload policy proposed: 6 images per SKU, 24 per request, 10 MB per file, 8 SKUs per enquiry. JPG/PNG/WebP only, up to 40 megapixels per image.
-- Contact, VAT/company details, approved legal text, actual client work, hosting and notification credentials remain owner-provided configuration.
+- Official contact, VAT/company details, approved legal text, production enquiry hosting and notification credentials remain owner-provided configuration. GitHub Pages is configured for a public static demo; it does not receive enquiries or uploaded files.
 
 ## Functional implementation
 Vite with semantic HTML and plain JavaScript, plus an Express service. This new workspace had no stack to preserve. Shared pricing and Zod validation run in browser and server. Uploads are validated by MIME declaration, magic bytes and actual image decoding. Files are stored outside the public build, grouped under a request and SKU directory. A durable JSON record holds the estimate and notification ledger.

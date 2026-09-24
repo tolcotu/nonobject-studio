@@ -13,7 +13,7 @@ npm run dev
 
 Open http://localhost:5173. The preview server binds to localhost. The form saves preview enquiries in a local private folder and explicitly says they are not sent to the studio.
 
-GitHub Pages publishes a **static demo** at `https://<owner>.github.io/nonobject-studio/`. The demo calculates and validates briefs in the browser, then downloads a JSON brief to the visitor’s device. It does not submit contact details or files to GitHub Pages or the studio. The full persistent enquiry and notification service requires a separate server host with private storage.
+GitHub Pages publishes a **static demo** at [tolcotu.github.io/nonobject-studio](https://tolcotu.github.io/nonobject-studio/). The demo calculates and validates briefs in the browser, then downloads a JSON brief to the visitor’s device. It does not submit contact details or files to GitHub Pages or the studio. The full persistent enquiry and notification service requires a separate server host with private storage.
 
 GitHub Actions builds the Pages release from `main` using `npm run build:pages`. Do not remove the preview flag or point a public Pages build at the local-storage API. Enable Pages source as GitHub Actions in repository settings.
 
@@ -28,8 +28,8 @@ Production serves `dist/` and the enquiry API on the same origin. `PORT` default
 
 ## What is included
 
-- NONOBJECT identity and three original generated, optimized WebP assets.
-- Layered hero, scroll-driven product-story assembly, concept gallery dialogs, sequential process, pricing, FAQ and a multi-SKU form.
+- NONOBJECT identity, generated studio imagery, and three galleries of supplied product listing work: an Amazon sieve set, a baking dish set, and a serving tray set.
+- Layered hero, scroll-driven product-story assembly, browsable project galleries, sequential process, pricing, FAQ and a multi-SKU form.
 - Responsive layouts, reduced-motion alternative, keyboard dialogs and visible focus.
 - Per-SKU uploads, preliminary calculator, browser/server validation, unique request IDs, durable private storage and idempotent save retries.
 - SMTP owner/client messages and Telegram adapters with persisted per-channel delivery status and a retry command.
@@ -56,9 +56,9 @@ This example is a schema, not approved legal text. The frontend displays supplie
 3. Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` and `OWNER_EMAIL`. Configure `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` if desired. Credentials must stay server-side.
 4. Choose a private persistent `DATA_DIR` outside the served tree, with backups and restricted access. Local `.data` is excluded from source control and denied by Vite. The API never exposes uploaded files as public URLs.
 5. Confirm the proposed upload limits, manual quotes above 9 images and order-minimum interpretation in [docs/ANALYSIS.md](docs/ANALYSIS.md).
-6. Supply real portfolio cases when available; generated studio experiments are labeled honestly.
+6. Add client names, listing links or performance figures only when the studio supplies and approves them. Current galleries use the supplied product imagery without inventing attribution or outcomes.
 
-**Not configured:** public hosting/domain, real legal/company details, notification credentials, Google Drive storage, automated retention/deletion and malware scanning. The site does not claim these are connected. Google Drive is the PRD's preferred final-delivery destination; initial enquiry storage currently uses private server files.
+**Not configured:** production enquiry hosting, real legal/company details, notification credentials, Google Drive storage, automated retention/deletion and malware scanning. The public GitHub Pages site is a static demo, not the production enquiry service. Google Drive is the PRD's preferred final-delivery destination; initial enquiry storage currently uses private server files.
 
 ## Data and reliability
 

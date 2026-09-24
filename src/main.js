@@ -35,20 +35,34 @@ $$('[data-direction]').forEach(button => button.addEventListener('click', () => 
 $('#direction-cta').addEventListener('click', () => { $('#visual-direction').value = $('[data-direction][aria-pressed=true]').dataset.direction; });
 
 const studies = {
- blue: { title: 'Material matters', image: 'blue-study', description: 'A study in contrast: deep cobalt, sharp folds and reflective surfaces. An exploration of how light and material can give a simple product a distinctive visual presence.', direction: 'Detail' },
- sound: { title: 'Quietly distinctive', image: 'sound-study', description: 'Soft forms meet rough stone. A product-in-context exploration of texture, balance and the relationship between an everyday object and its surroundings.', direction: 'Context' },
- object: { title: 'Everyday, reframed', image: 'hero-object', description: 'One familiar object, viewed through a sculptural lens. A visual identity experiment in orange and chrome, made to challenge how ordinary products are presented.', direction: 'Clarity' },
+ sieve: { title: 'Precision in the details', category: 'KITCHEN / AMAZON LISTING', image: 'sieve', count: 8, description: 'An eight-frame product gallery for a 20 cm stainless-steel sieve, balancing material details, practical use and clear product information.', direction: 'Detail' },
+ baking: { title: 'Made for every bake', category: 'KITCHEN / PRODUCT LISTING', image: 'baking', count: 9, description: 'A nine-frame listing set for a 30 cm baking dish, showing the product in use alongside its form, size and everyday versatility.', direction: 'Context' },
+ tray: { title: 'Everyday, served beautifully', category: 'KITCHEN / PRODUCT LISTING', image: 'tray', count: 6, description: 'A six-frame product story for a serving tray, moving between a calm home setting, product details and serving moments.', direction: 'Context' },
 };
 let selectedStudy;
+let selectedStudyImage = 0;
+function showStudyImage() {
+ const project = selectedStudy.image;
+ const index = selectedStudyImage + 1;
+ $('#study-image').src = siteUrl(`assets/portfolio/${project}/${String(index).padStart(2, '0')}.webp`);
+ $('#study-image').alt = `${selectedStudy.title}, product listing image ${index} of ${selectedStudy.count}`;
+ $('#study-count').textContent = `${String(index).padStart(2, '0')} / ${String(selectedStudy.count).padStart(2, '0')}`;
+}
 $$('[data-study]').forEach(button => button.addEventListener('click', () => {
  selectedStudy = studies[button.dataset.study];
+ selectedStudyImage = 0;
  $('#study-title').textContent = selectedStudy.title;
+ $('#study-category').textContent = selectedStudy.category;
  $('#study-description').textContent = selectedStudy.description;
- $('#study-image').src = siteUrl(`assets/${selectedStudy.image}.webp`);
- $('#study-image').alt = selectedStudy.title + ', AI-generated studio concept';
- $('#study-image').style.objectFit = button.dataset.study === 'object' ? 'contain' : 'cover';
+ showStudyImage();
  $('#study-dialog').showModal();
 }));
+$('#study-prev').addEventListener('click', () => { selectedStudyImage = (selectedStudyImage - 1 + selectedStudy.count) % selectedStudy.count; showStudyImage(); });
+$('#study-next').addEventListener('click', () => { selectedStudyImage = (selectedStudyImage + 1) % selectedStudy.count; showStudyImage(); });
+$('#study-dialog').addEventListener('keydown', event => {
+ if (event.key === 'ArrowLeft') { event.preventDefault(); $('#study-prev').click(); }
+ if (event.key === 'ArrowRight') { event.preventDefault(); $('#study-next').click(); }
+});
 $('#study-enquire').addEventListener('click', () => { $('#visual-direction').value = selectedStudy.direction; $('#study-dialog').close(); $('#project').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }); });
 $$('.dialog-close').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
 $$('dialog').forEach(dialog => dialog.addEventListener('click', e => { if(e.target === dialog) { const r = dialog.getBoundingClientRect(); if(e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close(); } }));

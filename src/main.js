@@ -24,9 +24,9 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') { $('.menu-to
 $('#polish-contact').addEventListener('click', () => { setTimeout(() => $('#contact-name').focus({preventScroll:true}), 350); });
 
 const studies = {
- sieve: { title: 'Precision in the details', category: 'KITCHEN / AMAZON LISTING', image: 'sieve', count: 8, description: 'An eight-frame product gallery for a 20 cm stainless-steel sieve, balancing material details, practical use and clear product information.', direction: 'Detail' },
- baking: { title: 'Made for every bake', category: 'KITCHEN / PRODUCT LISTING', image: 'baking', count: 9, description: 'A nine-frame listing set for a 30 cm baking dish, showing the product in use alongside its form, size and everyday versatility.', direction: 'Context' },
- tray: { title: 'Everyday, served beautifully', category: 'KITCHEN / PRODUCT LISTING', image: 'tray', count: 6, description: 'A six-frame product story for a serving tray, moving between a calm home setting, product details and serving moments.', direction: 'Context' },
+ sieve: { title: 'Stainless-steel sieve', category: 'KITCHEN / AMAZON LISTING', image: 'sieve', count: 8, description: 'An eight-frame product gallery for a 20 cm stainless-steel sieve, balancing material details, practical use and clear product information.', direction: 'Detail' },
+ baking: { title: 'Baking dish', category: 'KITCHEN / PRODUCT LISTING', image: 'baking', count: 9, description: 'A nine-frame listing set for a 30 cm baking dish, showing the product in use alongside its form, size and everyday versatility.', direction: 'Context' },
+ tray: { title: 'Serving tray', category: 'KITCHEN / PRODUCT LISTING', image: 'tray', count: 6, description: 'A six-frame product story for a serving tray, moving between a calm home setting, product details and serving moments.', direction: 'Context' },
 };
 let selectedStudy;
 let selectedStudyImage = 0;

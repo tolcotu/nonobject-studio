@@ -30,8 +30,8 @@ The current visual direction and the generated hero prompt are documented in [do
 
 ## What is included
 
-- NONOBJECT identity, a new photographic studio concept image, and three galleries of supplied product listing work: an Amazon sieve set, a baking dish set, and a serving tray set.
-- Editorial campaign hero, browsable project galleries, one real product-to-visual research example, pricing, FAQ and a short project brief form.
+- NONOBJECT identity, an opening composed from supplied product work, and three galleries of supplied product listing work: an Amazon sieve set, a baking dish set, and a serving tray set.
+- Portfolio-led editorial hero, browsable project galleries, one real product-to-visual research example, pricing, FAQ and a short project brief form.
 - Responsive layouts, reduced-motion alternative, keyboard dialogs and visible focus.
 - Optional brief-level attachments, browser/server validation, unique request IDs, durable private storage and idempotent save retries.
 - SMTP owner/client messages and Telegram adapters with persisted per-channel delivery status and a retry command.

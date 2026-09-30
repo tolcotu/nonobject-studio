@@ -1,5 +1,11 @@
 # NONOBJECT editorial refinement
 
+## Current direction: portfolio-led studio
+
+Following the user’s feedback that the previous pass still felt AI-generated, the opening now uses supplied baking-dish imagery: the isolated product paired with the completed lifestyle visual. The generated orange bottle is no longer used on the page. A compact NONOBJECT masthead replaces the giant opening wordmark, and a sans-serif / italic serif contrast gives the retained slogan its hierarchy. Project titles are descriptive product names. The research section uses a muted light surface rather than a large dark slab, and the oversized orange footer is removed. Movement is limited to a small difference in travel between the product and finished visual, with a static reduced-motion composition. This direction supersedes the earlier campaign-image decisions below.
+
+## Previous iteration (superseded)
+
 The user asked for stronger main imagery, less visual noise, a clearer section sequence and a more premium experience. This revision uses the existing paper, ink and orange palette and typographic conventions. The original slogan, offer and short enquiry requirements remain intact.
 
 ## Decisions

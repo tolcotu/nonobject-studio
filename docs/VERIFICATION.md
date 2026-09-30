@@ -3,6 +3,9 @@
 ## Result
 The final production build succeeds. Twelve domain/API tests pass. Browser interaction checks pass against an isolated server and temporary data directory. No real emails or Telegram messages were sent.
 
+## Responsive follow-up
+The responsive pass now checks both sides of the 700px breakpoint. At 560–960px, selected work uses a compact two-column arrangement and the enquiry form takes the full reading width. At 701–820px, navigation collapses to the menu. A focused browser sweep covered 320, 560, 700, 701, 768, 820, 821, 960 and 961px, including menu open/close, hero containment, form width and horizontal overflow; automated accessibility checks covered 320 and 768px.
+
 ## Current editorial refinement
 The latest six-viewport run includes 1440px, 1920px, 834px, 390px, 320px and reduced-motion layouts. All report no overflow, broken images, runtime errors or automated accessibility violations. Hero scroll positions, selected work, research and pricing were captured; desktop and mobile images were visually inspected. The older assembly-stage evidence below describes the earlier design and is retained as history. See `VISUAL-REFINEMENT.md` for current decisions.
 

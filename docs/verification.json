@@ -21,6 +21,20 @@
     "accessibility": []
   },
   {
+    "name": "tablet-700",
+    "overflow": false,
+    "broken": [],
+    "errors": [],
+    "accessibility": []
+  },
+  {
+    "name": "tablet-701",
+    "overflow": false,
+    "broken": [],
+    "errors": [],
+    "accessibility": []
+  },
+  {
     "name": "mobile",
     "overflow": false,
     "broken": [],

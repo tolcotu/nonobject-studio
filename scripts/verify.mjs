@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { writeFile } from 'node:fs/promises';
 const browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
 const results=[];
-for(const [name,width,height,reducedMotion] of [['desktop',1440,1000,'no-preference'],['large',1920,1080,'no-preference'],['tablet',834,1112,'no-preference'],['mobile',390,844,'no-preference'],['compact',320,640,'no-preference'],['reduced',390,844,'reduce']]){
+for(const [name,width,height,reducedMotion] of [['desktop',1440,1000,'no-preference'],['large',1920,1080,'no-preference'],['tablet',834,1112,'no-preference'],['tablet-700',700,900,'no-preference'],['tablet-701',701,900,'no-preference'],['mobile',390,844,'no-preference'],['compact',320,640,'no-preference'],['reduced',390,844,'reduce']]){
  const context=await browser.newContext({viewport:{width,height},reducedMotion});
  await context.addInitScript(()=>{Element.prototype.requestPointerLock=()=>{};Element.prototype.setPointerCapture=()=>{};});
  const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));

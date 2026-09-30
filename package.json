@@ -10,7 +10,8 @@
     "test": "node --test tests/*.test.js",
     "verify": "node scripts/verify.mjs",
     "retry-notifications": "node scripts/retry-notifications.mjs",
-    "build:pages": "node scripts/build-pages.mjs"
+    "build:pages": "node scripts/build-pages.mjs",
+    "build:vercel": "node scripts/build-vercel.mjs"
   },
   "dependencies": {
     "dotenv": "^17.2.2",

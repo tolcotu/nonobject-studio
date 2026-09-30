@@ -11,7 +11,7 @@ let busy = false;
 let legalApproved = false;
 let pendingFingerprint = '';
 const form = $('#project-form');
-const githubPagesDemo = import.meta.env.VITE_GITHUB_PAGES_DEMO === 'true';
+const staticPreview = import.meta.env.VITE_GITHUB_PAGES_DEMO === 'true' || import.meta.env.VITE_STATIC_PREVIEW === 'true';
 const siteUrl = path => `${import.meta.env.BASE_URL}${String(path).replace(/^\//, '')}`;
 
 $('#year').textContent = new Date().getFullYear();
@@ -98,10 +98,10 @@ $$('[data-package]').forEach(link => link.addEventListener('click', () => {
  if (option) option.checked = true;
 }));
 $('#project-fields').disabled = false;
-if (githubPagesDemo) {
- $('#preview-notice').textContent = 'GitHub Pages preview. SEND PROJECT prepares a brief to download on your device. Nothing is sent to the studio.';
- legal.privacy[0] = 'Data notice (GitHub Pages demo)';
- legal.privacy[1][0] = 'This static GitHub Pages demo sends no contact information or files anywhere. Values remain in this browser tab. SEND PROJECT prepares a downloadable brief on your device; selected attachments are listed by name but their contents are not included.';
+if (staticPreview) {
+ $('#preview-notice').textContent = 'Preview mode. SEND PROJECT prepares a brief to download on your device. Nothing is sent to the studio.';
+ legal.privacy[0] = 'Data notice (static preview)';
+ legal.privacy[1][0] = 'This static preview sends no contact information or files anywhere. Values remain in this browser tab. SEND PROJECT prepares a downloadable brief on your device; selected attachments are listed by name but their contents are not included.';
 } else fetch('/api/config').then(response => {
  if (!response.ok) throw new Error(); return response.json();
 }).then(settings => {
@@ -140,9 +140,9 @@ function resetBrief() {
 function showSuccess(result, payload, demo = false) {
  const panel = $('#form-success'); panel.hidden = false; form.hidden = true;
  const title = demo ? 'Your brief is ready to download.' : result.preview ? 'Your preview brief is saved.' : 'Your project enquiry is received.';
- const message = demo ? 'This GitHub Pages demo has not sent or saved your details. The downloaded brief stays on your device; attached files are listed by name only.' : result.preview ? 'Your information is stored on this machine; it has not been sent to the studio.' : result.confirmationSent ? 'A confirmation email has been sent. We’ll review your brief and contact you personally.' : 'Your enquiry is safely stored. Email confirmation is pending; keep the request ID below.';
+ const message = demo ? 'This preview has not sent or saved your details. The downloaded brief stays on your device; attached files are listed by name only.' : result.preview ? 'Your information is stored on this machine; it has not been sent to the studio.' : result.confirmationSent ? 'A confirmation email has been sent. We’ll review your brief and contact you personally.' : 'Your enquiry is safely stored. Email confirmation is pending; keep the request ID below.';
  panel.innerHTML = `<span class="small-star" aria-hidden="true">✳</span><h3>${title}</h3><p>${message}</p><p><strong>Request ${escape(result.requestId)}</strong><br>${escape(payload.productCount)} ${payload.productCount === '1' ? 'product' : 'products'} · ${escape(payload.email)}</p><p>Scope and price are confirmed personally after review.</p><button class="button button-dark" type="button" id="download-summary">Download brief summary <span aria-hidden="true">↗</span></button><br><button class="text-link inline-button" type="button" id="new-enquiry">Start another brief</button>`;
- const summary = { studio: 'NONOBJECT', requestId: result.requestId, mode: demo ? 'GitHub Pages demo: not sent to the studio.' : result.preview ? 'Local preview: saved on this machine only.' : 'Submitted', submittedAt: new Date().toISOString(), ...payload, submissionKey: undefined, website: undefined, attachments: attachments.map(file => ({ name: file.name, sizeBytes: file.size, type: file.type })) };
+ const summary = { studio: 'NONOBJECT', requestId: result.requestId, mode: demo ? 'Static preview: not sent to the studio.' : result.preview ? 'Local preview: saved on this machine only.' : 'Submitted', submittedAt: new Date().toISOString(), ...payload, submissionKey: undefined, website: undefined, attachments: attachments.map(file => ({ name: file.name, sizeBytes: file.size, type: file.type })) };
  $('#download-summary').addEventListener('click', () => downloadBrief(result.requestId, summary));
  $('#new-enquiry').addEventListener('click', resetBrief); panel.focus();
 }
@@ -153,7 +153,7 @@ form.addEventListener('submit', event => {
  const fingerprint = JSON.stringify({ ...payload, submissionKey: null, files: attachments.map(file => [file.name, file.size, file.lastModified]) });
  if (pendingFingerprint && pendingFingerprint !== fingerprint) { submissionKey = crypto.randomUUID(); payload.submissionKey = submissionKey; }
  pendingFingerprint = fingerprint;
- if (githubPagesDemo) {
+ if (staticPreview) {
   const requestId = `NO-DEMO-${new Date().toISOString().slice(0, 10).replaceAll('-', '')}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
   showSuccess({ requestId }, payload, true); return;
  }
@@ -175,17 +175,44 @@ form.addEventListener('submit', event => {
 });
 
 function initScroll() {
- if(window.ScrollCraft) window.ScrollCraft.mount(document);
+ if (window.ScrollCraft) window.ScrollCraft.mount(document);
  const hero = $('.editorial-hero');
+ const research = $('.research-layout');
+ const insights = $$('.research-insights li');
+ const links = $$('#main-nav a');
  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+ const clamp = value => Math.max(0, Math.min(1, value));
  let raf = false;
  function paint() {
   raf = false;
-  const progress = reduce.matches ? 0 : Math.max(0, Math.min(1, -hero.getBoundingClientRect().top / hero.offsetHeight));
+  const progress = reduce.matches ? 0 : clamp(-hero.getBoundingClientRect().top / hero.offsetHeight);
+  hero.style.setProperty('--hero-progress', progress.toFixed(3));
   hero.style.setProperty('--hero-shift', `${(progress * 36).toFixed(2)}px`);
+  document.documentElement.style.setProperty('--reading-progress', reduce.matches ? 0 : clamp(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)));
+  const bounds = research.getBoundingClientRect();
+  research.style.setProperty('--research-progress', reduce.matches ? 0 : clamp((innerHeight * .35 - bounds.top) / Math.max(1, bounds.height - innerHeight * .5)));
+  let activeInsight = 0;
+  insights.forEach((item, index) => { if (item.getBoundingClientRect().top < innerHeight * .5) activeInsight = index; });
+  insights.forEach((item, index) => item.classList.toggle('is-active', index === activeInsight));
+  let activeLink;
+  links.forEach(link => { const section = document.querySelector(link.hash); if (section && section.getBoundingClientRect().top <= innerHeight * .4) activeLink = link; });
+  links.forEach(link => { if (link === activeLink) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current'); });
  }
- function schedule() { if(!raf) { raf = true; requestAnimationFrame(paint); } }
- addEventListener('scroll', schedule, {passive:true}); addEventListener('resize', schedule);
- reduce.addEventListener('change', schedule); paint();
+ const entries = $$('.portfolio-item, .research-visuals figure');
+ let observer;
+ function setupEntrance() {
+  observer?.disconnect();
+  document.documentElement.classList.toggle('motion-ready', !reduce.matches && 'IntersectionObserver' in window);
+  if (reduce.matches || !('IntersectionObserver' in window)) return;
+  observer = new IntersectionObserver(changes => changes.forEach(entry => {
+   if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); }
+  }), { threshold: .08 });
+  entries.forEach(entry => { entry.setAttribute('data-enter', ''); observer.observe(entry); });
+ }
+ function schedule() { if (!raf) { raf = true; requestAnimationFrame(paint); } }
+ addEventListener('scroll', schedule, { passive: true });
+ addEventListener('resize', schedule);
+ reduce.addEventListener('change', () => { setupEntrance(); schedule(); });
+ setupEntrance(); paint();
 }
-if(document.readyState==='complete')initScroll();else addEventListener('load',initScroll,{once:true});
+if (document.readyState === 'complete') initScroll(); else addEventListener('load', initScroll, { once: true });

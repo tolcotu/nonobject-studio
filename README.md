@@ -91,3 +91,7 @@ node scripts/interactions.mjs
 Browser scripts use local Chrome at the macOS path. Change `executablePath` for another system. They run headlessly and disable native pointer capture/lock. `scripts/interactions.mjs` starts an isolated preview server, exercises actual uploads/storage, then removes its temporary test data. No notification messages are sent by verification.
 
 See [docs/VERIFICATION.md](docs/VERIFICATION.md), [docs/ANALYSIS.md](docs/ANALYSIS.md), and `scrollcraft/builds/nonobject/BRIEF.md` for decisions, evidence and limits. Original generated PNGs remain in the generator's output directory; all assets needed to run the site are copied and optimized into `public/`.
+
+## Vercel hosting
+
+The repository includes a Vercel configuration and a separate `npm run build:vercel` command. See [the Vercel setup guide](docs/VERCEL.md). This build runs the form in clearly labelled static preview mode: briefs can be downloaded, but are not sent to the studio.

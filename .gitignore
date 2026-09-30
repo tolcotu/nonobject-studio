@@ -12,3 +12,8 @@ docs/screenshots/
 docs/*-initial.json
 scroll-craft-main/
 scrollcraft/builds/
+
+.vercel/
+output/
+.env.*
+!.env.example

@@ -1,0 +1,7 @@
+.data
+.env
+.env.*
+docs/screenshots
+output
+scroll-craft-main
+scrollcraft/builds

@@ -99,3 +99,23 @@
  .reason-visuals{display:block}.reason-visuals figure+figure{margin-top:34px}.reason-visuals figcaption{font-size:9px;margin-top:12px}
  .reason-signoff{font-size:27px;max-width:27ch;margin-top:60px}
 }
+
+/* Short project brief */
+.brief-choice{margin-top:34px;border-top:1px solid var(--line);padding-top:20px}
+.brief-choice legend{float:left;width:100%;font-size:13px;font-weight:500;margin-bottom:16px}
+.brief-choice legend span{color:#a6350e}
+.brief-options{clear:both;display:flex;flex-wrap:wrap;gap:8px}
+.brief-options label{display:inline-flex;align-items:center;gap:9px;min-height:42px;padding:10px 13px;border:1px solid var(--line);font-size:12px;line-height:1.25;cursor:pointer;transition:background .2s,border-color .2s}
+.brief-options label:hover{border-color:var(--ink)}
+.brief-options label:has(input:checked){background:#e1dfd5;border-color:var(--ink)}
+.brief-options input{width:15px;height:15px;flex:none;margin:0;accent-color:var(--ink)}
+.count-options label{min-width:60px;justify-content:center;font-size:13px}
+.brief-details{margin-top:38px}
+.field-grid label small{font-size:10px;font-weight:400;color:var(--soft);margin-left:5px}
+.brief-upload{margin-top:18px;border:1px dashed #969285;padding:20px 22px}
+.brief-upload>label{display:block;font-size:12px;margin-bottom:10px}
+.brief-upload>p:not(.file-error){font-size:10px;line-height:1.5;color:var(--soft);margin-top:10px}
+.brief-upload input{max-width:100%;font-size:11px}
+.brief-upload input::file-selector-button{font:inherit;border:1px solid var(--line);background:#e6e4db;padding:8px 12px;margin-right:10px;cursor:pointer}
+@media(max-width:700px){.brief-choice{margin-top:29px}.brief-options label{font-size:11px}.count-options label{min-width:70px}.brief-upload{padding:18px}.brief-details{margin-top:30px}}
+@media(max-width:440px){.field-grid{grid-template-columns:1fr}.count-options label{min-width:calc((100% - 16px)/3)}.brief-options:not(.count-options) label{width:100%}}

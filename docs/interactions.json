@@ -1,23 +1,16 @@
 {
   "passed": true,
   "checks": [
-    "buyer direction carries to form",
-    "gallery opens and Escape closes",
-    "FAQ opens",
-    "missing photos blocked",
-    "invalid file rejected",
-    "two products preserve independent files",
-    "rush and custom pricing update",
-    "minimum image validation",
-    "failed request retains values and uploads",
+    "no per-product fields",
+    "100+ product enquiry without uploads",
+    "failure preserves brief",
     "retry saves exactly one enquiry",
     "summary downloads",
-    "success accurately labels local storage",
+    "preview correctly reports no delivery",
     "new brief resets",
-    "product removal preserves remaining SKU",
-    "privacy dialog keyboard closure",
-    "mobile menu navigation",
-    "no-JavaScript form disabled and never GET"
+    "privacy dialog",
+    "mobile width",
+    "no-JavaScript disabled"
   ],
   "errors": [],
   "accessibility": []

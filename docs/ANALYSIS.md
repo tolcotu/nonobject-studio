@@ -31,15 +31,10 @@ The custom “studio contact sheet” grammar combines a spatial title compositi
 
 The hero uses independent subject and foreground-caption movement. The page also uses a pin, image wipe and sequential process entrances: four device families without applying one treatment to every section. Compact phones get a different spatial layout. Reduced-motion mode exposes the completed composition without pinning or parallax.
 
-## Commercial decisions requiring owner confirmation before launch
-- Calculator included as a reviewable preliminary tool, not a binding offer.
-- Quantities over 9 use a configurable manual-quote policy. This avoids deciding an unapproved package rule.
-- Minimum-order status is checked against image scope before a provisional rush surcharge, so rush alone cannot silently qualify an undersized order. Confirm this interpretation.
-- The form accepts an enquiry below €200 with an explicit minimum warning; it never treats the enquiry as checkout.
-- Upload policy proposed: 6 images per SKU, 24 per request, 10 MB per file, 8 SKUs per enquiry. JPG/PNG/WebP only, up to 40 megapixels per image.
-- Official contact, VAT/company details, approved legal text, production enquiry hosting and notification credentials remain owner-provided configuration. GitHub Pages is configured for a public static demo; it does not receive enquiries or uploaded files.
+## Current enquiry flow
+The first-contact form is intentionally a short brief: contact details, project need, one product-count range (including 100+), platforms, available materials, timeline and optional context or files. It does not ask visitors to add products one by one, and it does not calculate a quote before review. SKU, EAN, specifications, image quantities and formats are gathered after personal contact. Optional uploads accept up to six JPG/PNG/WebP/PDF files of 10 MB each. Official contact details, legal text, production hosting and notification credentials remain owner-provided configuration. GitHub Pages is a static demo and cannot receive enquiries.
 
 ## Functional implementation
-Vite with semantic HTML and plain JavaScript, plus an Express service. This new workspace had no stack to preserve. Shared pricing and Zod validation run in browser and server. Uploads are validated by MIME declaration, magic bytes and actual image decoding. Files are stored outside the public build, grouped under a request and SKU directory. A durable JSON record holds the estimate and notification ledger.
+Vite with semantic HTML and plain JavaScript, plus an Express service. The same Zod schema validates the brief in the browser and on the server. The API validates optional attachments, saves them outside the public build, and stores a durable enquiry record with notification status. Published pricing remains informational, with final scope and price confirmed personally.
 
 Local storage is a functioning first implementation, not a claim of Google Drive integration. A production host needs a persistent private volume or a new storage adapter. SMTP owner/client email and Telegram notification adapters are present but inactive without configuration. Preview saves never send messages. Legal notices and a public origin must be configured before public enquiries are enabled.

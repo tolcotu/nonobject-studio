@@ -5,8 +5,7 @@ import { mkdir, readFile, writeFile, rm, rename, chmod } from 'node:fs/promises'
 import { createHash, randomUUID } from 'node:crypto';
 import sharp from 'sharp';
 import { config } from '../src/content/config.js';
-import { enquirySchema, imageType } from '../src/domain/validation.js';
-import { calculateEstimate } from '../src/domain/pricing.js';
+import { enquirySchema, attachmentType } from '../src/domain/validation.js';
 import { notify, writeRecord } from './notifications.js';
 export async function createApp(options={}) {
  const app=express(); app.disable('x-powered-by');
@@ -29,11 +28,11 @@ export async function createApp(options={}) {
   next();
  });
  const upload=multer({dest:tempDir,limits:{fileSize:config.uploads.maxFileBytes,files:config.uploads.maxFiles,fields:1,fieldSize:200000,parts:config.uploads.maxFiles+1},fileFilter:(req,file,callback)=>{
-  if(!config.uploads.mimeTypes.includes(file.mimetype))return callback(new Error('Use JPG, PNG or WebP photos only.'));callback(null,true);
+  if(!config.uploads.mimeTypes.includes(file.mimetype))return callback(new Error('Use JPG, PNG, WebP or PDF files only.'));callback(null,true);
  }}).any();
  app.post('/api/enquiries',(req,res)=>upload(req,res,async uploadError=>{
   const clean=()=>Promise.all((req.files||[]).map(f=>rm(f.path,{force:true}).catch(()=>{})));
-  if(uploadError){await clean();return res.status(400).json({error:uploadError.code==='LIMIT_FILE_SIZE'?'A file exceeds the 10 MB limit.':uploadError.code?'Upload limits exceeded. Maximum 6 files per product, 24 overall, 10 MB each.':uploadError.message});}
+  if(uploadError){await clean();return res.status(400).json({error:uploadError.code==='LIMIT_FILE_SIZE'?'A file exceeds the 10 MB limit.':uploadError.code?'Upload limits exceeded. Maximum 6 files, 10 MB each.':uploadError.message});}
   let dir;let lockedKey;let saved=false;
   try {
    let raw;try{raw=JSON.parse(req.body.payload||'');}catch{await clean();return res.status(400).json({error:'The project brief was missing or invalid. Please submit using the project form.'});}
@@ -44,31 +43,35 @@ export async function createApp(options={}) {
    try { const existing=JSON.parse(await readFile(path.join(dir,'enquiry.json'),'utf8'));await clean();return res.json({requestId:existing.requestId,preview:existing.preview,confirmationSent:existing.notifications.clientEmail?.status==='sent',duplicate:true}); } catch(error){if(error.code!=='ENOENT')throw error;}
    if(locks.has(key)){await clean();return res.status(409).json({error:'This enquiry is still saving. Please wait a moment and retry.'});}
    locks.add(key);lockedKey=key;
-   const fields=new Set(enquiry.products.map(p=>`files-${p.id}`));
-   if(req.files.some(f=>!fields.has(f.fieldname)))throw new Error('A photo did not match a product. Please select it again.');
-   for(const product of enquiry.products){const files=req.files.filter(f=>f.fieldname===`files-${product.id}`);if(files.length<1||files.length>config.uploads.maxFilesPerProduct)throw new Error(`Add 1–6 product photos for SKU ${product.sku}.`);}
-   for(const file of req.files){const buffer=await readFile(file.path);if(imageType(buffer)!==file.mimetype)throw new Error('A file does not contain a supported image. Please use genuine JPG, PNG or WebP photos.');try{await sharp(buffer,{limitInputPixels:40000000}).stats();}catch{throw new Error('An image could not be read. Please export it again as JPG, PNG or WebP.');}}
-   await mkdir(dir,{recursive:true,mode:0o700});
-   const requestId=`NO-${new Date().toISOString().slice(0,10).replaceAll('-','')}-${randomUUID().slice(0,8).toUpperCase()}`;
-   const estimate=calculateEstimate(enquiry.products,enquiry.rushRequested);
-   for(const product of enquiry.products){
-    const sku=product.sku.replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,60)||'product';const productDir=path.join(dir,`${sku}-${product.id.slice(0,8)}`,'Images');await mkdir(productDir,{recursive:true,mode:0o700});await mkdir(path.join(productDir,'..','SEO Description'),{mode:0o700});
-    product.files=[];
-    for(const file of req.files.filter(f=>f.fieldname===`files-${product.id}`)){
-     const ext={'image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp'}[file.mimetype];
-     const originalName=path.basename(file.originalname).replace(/[^a-zA-Z0-9._ -]/g,'_').slice(0,140);
-     const target=path.join(productDir,randomUUID()+ext);await rename(file.path,target);await chmod(target,0o600);
-     product.files.push({originalName,storageKey:path.relative(dir,target),mimeType:file.mimetype,sizeBytes:file.size,productSku:product.sku,uploadedAt:new Date().toISOString()});
+   if(req.files.some(f=>f.fieldname!=='attachments'))throw new Error('An attachment could not be matched to the brief. Please select it again.');
+   for(const file of req.files){
+    const buffer=await readFile(file.path);
+    if(attachmentType(buffer)!==file.mimetype)throw new Error('A file does not contain a supported JPG, PNG, WebP or PDF.');
+    if(file.mimetype.startsWith('image/')){
+     try{await sharp(buffer,{limitInputPixels:40000000}).stats();}
+     catch{throw new Error('An image could not be read. Please export it again as JPG, PNG or WebP.');}
     }
    }
-   const record={...enquiry,submissionKey:undefined,website:undefined,requestId,createdAt:new Date().toISOString(),status:'new',preview:!live,estimate,notifications:{}};
+   await mkdir(dir,{recursive:true,mode:0o700});
+   const requestId=`NO-${new Date().toISOString().slice(0,10).replaceAll('-','')}-${randomUUID().slice(0,8).toUpperCase()}`;
+   const attachments=[];
+   if(req.files.length){
+    const attachmentDir=path.join(dir,'Attachments');await mkdir(attachmentDir,{recursive:true,mode:0o700});
+    for(const file of req.files){
+     const ext={'image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp','application/pdf':'.pdf'}[file.mimetype];
+     const originalName=path.basename(file.originalname).replace(/[^a-zA-Z0-9._ -]/g,'_').slice(0,140);
+     const target=path.join(attachmentDir,randomUUID()+ext);await rename(file.path,target);await chmod(target,0o600);
+     attachments.push({originalName,storageKey:path.relative(dir,target),mimeType:file.mimetype,sizeBytes:file.size,uploadedAt:new Date().toISOString()});
+    }
+   }
+   const record={...enquiry,submissionKey:undefined,website:undefined,requestId,createdAt:new Date().toISOString(),status:'new',preview:!live,attachments,notifications:{}};
    await writeRecord(dir,record);saved=true;
    // Preview saves never send messages. Live notifications run after durable persistence.
    if(live) {await notify(record,dir).catch(()=>{});}
    res.status(201).json({requestId,preview:!live,confirmationSent:record.notifications.clientEmail?.status==='sent'});
   } catch(error) {
    await clean();if(dir&&!saved&&lockedKey)await rm(dir,{recursive:true,force:true}).catch(()=>{});
-   const clientMessage=/photo|image|file|SKU/.test(error.message)?error.message:'Could not save your brief. Your files remain selected; please retry.';
+   const clientMessage=/photo|image|file|attachment|PDF|JPG|PNG|WebP/.test(error.message)?error.message:'Could not save your brief. Your files remain selected; please retry.';
    res.status(400).json({error:clientMessage});
   } finally {if(lockedKey)locks.delete(lockedKey);await clean();}
  }));

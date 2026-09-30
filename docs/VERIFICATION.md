@@ -1,7 +1,7 @@
 # Verification and delivery
 
 ## Result
-The final production build succeeds. Thirteen domain/API tests pass. Browser interaction checks pass against an isolated server and temporary data directory. No real emails or Telegram messages were sent.
+The final production build succeeds. Twelve domain/API tests pass. Browser interaction checks pass against an isolated server and temporary data directory. No real emails or Telegram messages were sent.
 
 ## Visual evidence
 Local visual captures in `docs/screenshots/` include the opening, four intermediate/resolved story positions, gallery and pricing at:
@@ -26,9 +26,7 @@ All six final runs report no document overflow, broken images, browser runtime e
 Initial reports are preserved in `verification-initial.json` and `interactions-initial.json`. `verification.json` and `interactions.json` supersede them. The initial interaction report's premature `passed` flag is superseded by the final error-sensitive result.
 
 ## Functional checks
-Verified buyer-question selection carries into the enquiry; gallery and legal dialogs open and close with Escape; FAQs expand; products can be added and removed; quantity validation blocks fewer than 3 images; exactly 9 costs €65; rush adds 30%; 10+ produces a custom-quote state; uploads reject unsupported file types; every SKU requires photos; failed requests preserve inputs and selected files; retry persists a single enquiry; per-SKU files remain independent; preview success does not claim email delivery; summary download works; new brief resets; mobile menu closes on navigation.
-
-Domain/API tests additionally cover invalid contact data, missing consent, duplicate SKUs/IDs, unsupported URLs, mismatched image contents, safe file paths, missing files, rate limiting, origin checks and persistent retry deduplication.
+The current interaction run verifies the short brief with 100+ products and no attachments, no per-product fields, failed-request recovery, one persisted enquiry on retry, downloadable summary, accurate preview messaging, reset, legal dialog, mobile width and the disabled no-JavaScript form. It reports no browser runtime errors or automated accessibility violations. Domain/API tests check the 100+ path, optional attachment storage, signature rejection, validation, rate limiting, origin checks and retry deduplication. Pricing module tests remain for the published offer; the enquiry form no longer displays an automatic estimate.
 
 ## Production package
 The built `dist/` was served by the real Express production entry point on a separate local port. Images, fonts, CSS, scroll engine and form modules loaded without failed requests. Private data/config/server-source paths returned 404. Unconfigured production enquiries returned 503. The no-JavaScript layout remained styled and its submit button disabled.

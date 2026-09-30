@@ -9,8 +9,7 @@ export async function writeRecord(directory, record) {
 export async function notify(record,directory) {
  if(record.preview)return;
  const env=process.env;
- const products=record.products.map(p=>`${p.productName} / ${p.sku}: ${p.imageCount} images, ${p.platforms.join(', ')}`).join('\n');
- const summary=`Request ID: ${record.requestId}\n${products}\nRush requested: ${record.rushRequested?'Yes':'No'}\nAll scope and pricing subject to personal confirmation.`;
+ const summary=`Request ID: ${record.requestId}\nBrand: ${record.companyName || 'Not provided'}\nNeed: ${record.projectNeed}\nProducts: ${record.productCount}\nPlatforms: ${record.platforms.join(', ')}\nMaterials: ${record.materialsStatus}\nTimeline: ${record.timeline}\nWebsite or product: ${record.projectUrl || 'Not provided'}\nShared materials link: ${record.materialsLink || 'Not provided'}\nAttached files: ${record.attachments.length}\nNotes: ${record.notes || 'None'}\nAll scope and pricing subject to personal confirmation.`;
  const smtpReady=env.SMTP_HOST&&env.MAIL_FROM&&env.OWNER_EMAIL;
  const transport=smtpReady?nodemailer.createTransport({host:env.SMTP_HOST,port:Number(env.SMTP_PORT||587),secure:env.SMTP_SECURE==='true',auth:env.SMTP_USER?{user:env.SMTP_USER,pass:env.SMTP_PASS}:undefined,connectionTimeout:10000,socketTimeout:15000,disableFileAccess:true,disableUrlAccess:true}):null;
  async function attempt(channel, configured, send) {
@@ -22,9 +21,9 @@ export async function notify(record,directory) {
   await writeRecord(directory,record);
  }
  await attempt('ownerEmail',smtpReady,()=>transport.sendMail({from:env.MAIL_FROM,to:env.OWNER_EMAIL,replyTo:record.email,subject:`NONOBJECT enquiry ${record.requestId}`,text:`${record.contactName}\n${record.email}\n\n${summary}`,messageId:`<${record.requestId}-owner@nonobject.local>`}));
- await attempt('clientEmail',smtpReady,()=>transport.sendMail({from:env.MAIL_FROM,to:record.email,subject:`We received your project request — #${record.requestId}`,text:`Hi ${record.contactName},\n\nThank you for sending your project request to NONOBJECT.\n\nWe have received your materials. Our designer will review your product information and files, then contact you personally to confirm the final scope, availability and price.\n\n${summary}\n\nBest regards,\nNONOBJECT\n${env.OWNER_EMAIL}`,messageId:`<${record.requestId}-client@nonobject.local>`}));
+ await attempt('clientEmail',smtpReady,()=>transport.sendMail({from:env.MAIL_FROM,to:record.email,subject:`We received your project request — #${record.requestId}`,text:`Hi ${record.contactName},\n\nThank you for sending your project request to NONOBJECT.\n\nWe have received your brief. Our designer will review it and contact you personally to confirm the final scope, availability and price. You can share SKU and detailed product information after we get in touch.\n\n${summary}\n\nBest regards,\nNONOBJECT\n${env.OWNER_EMAIL}`,messageId:`<${record.requestId}-client@nonobject.local>`}));
  await attempt('telegram',env.TELEGRAM_BOT_TOKEN&&env.TELEGRAM_CHAT_ID,async()=>{
-  const response=await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:env.TELEGRAM_CHAT_ID,text:`New NONOBJECT enquiry ${record.requestId}. ${record.products.length} product(s). Review private enquiry storage for details.`}),signal:AbortSignal.timeout(10000)});
+  const response=await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:env.TELEGRAM_CHAT_ID,text:`New NONOBJECT enquiry ${record.requestId}. ${record.productCount} products. Review private enquiry storage for details.`}),signal:AbortSignal.timeout(10000)});
   const data=await response.json();if(!response.ok||!data.ok)throw new Error('Notification failed');
  });
  transport?.close();

@@ -26,10 +26,12 @@ npm start
 
 Production serves `dist/` and the enquiry API on the same origin. `PORT` defaults to 5173. Set `HOST=0.0.0.0` only when deploying behind the intended proxy. Production submissions are disabled until launch configuration is complete.
 
+The current visual direction and the generated hero prompt are documented in [docs/VISUAL-REFINEMENT.md](docs/VISUAL-REFINEMENT.md).
+
 ## What is included
 
-- NONOBJECT identity, generated studio imagery, and three galleries of supplied product listing work: an Amazon sieve set, a baking dish set, and a serving tray set.
-- Layered hero, scroll-driven product-story assembly, browsable project galleries, sequential process, pricing, FAQ and a short project brief form.
+- NONOBJECT identity, a new photographic studio concept image, and three galleries of supplied product listing work: an Amazon sieve set, a baking dish set, and a serving tray set.
+- Editorial campaign hero, browsable project galleries, one real product-to-visual research example, pricing, FAQ and a short project brief form.
 - Responsive layouts, reduced-motion alternative, keyboard dialogs and visible focus.
 - Optional brief-level attachments, browser/server validation, unique request IDs, durable private storage and idempotent save retries.
 - SMTP owner/client messages and Telegram adapters with persisted per-channel delivery status and a retry command.

@@ -14,7 +14,6 @@ try {
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
  await context.addInitScript(()=>{Element.prototype.requestPointerLock=()=>{};Element.prototype.setPointerCapture=()=>{};});
  const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://localhost:5174',{waitUntil:'networkidle'});
- await page.getByRole('button',{name:'Where does it fit?',exact:true}).click();assert.equal(await page.locator('#visual-direction').inputValue(),'Context');
  await page.locator('[data-study=sieve]').click();assert.equal(await page.locator('#study-dialog').evaluate(d=>d.open),true);await page.keyboard.press('Escape');assert.equal(await page.locator('#study-dialog').evaluate(d=>d.open),false);
  assert.equal(await page.locator('.product-block,[data-field=sku],#add-product').count(),0);
  await page.locator('#contact-name').fill('Preview Tester');await page.locator('[name=email]').fill('preview@example.com');
@@ -24,7 +23,7 @@ try {
  const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
  await page.locator('#submit-enquiry').click();await page.locator('#form-success').waitFor();assert.match(await page.locator('#form-success').textContent(),/preview brief is saved/);assert.match(await page.locator('#form-success').textContent(),/not been sent/);
  const downloadPromise=page.waitForEvent('download');await page.locator('#download-summary').click();const download=await downloadPromise;assert.match(download.suggestedFilename(),/NONOBJECT-NO-/);
- const dirs=await readdir(path.join(dir,'enquiries'));assert.equal(dirs.length,1);const record=JSON.parse(await readFile(path.join(dir,'enquiries',dirs[0],'enquiry.json'),'utf8'));assert.equal(record.productCount,'100+');assert.deepEqual(record.attachments,[]);assert.equal(record.visualDirection,'Context');
+ const dirs=await readdir(path.join(dir,'enquiries'));assert.equal(dirs.length,1);const record=JSON.parse(await readFile(path.join(dir,'enquiries',dirs[0],'enquiry.json'),'utf8'));assert.equal(record.productCount,'100+');assert.deepEqual(record.attachments,[]);assert.equal(record.visualDirection,'');
  await page.screenshot({path:'docs/screenshots/form-success.png'});
  await page.locator('#new-enquiry').click();assert.equal(await page.locator('#contact-name').inputValue(),'');
  await page.locator('[data-legal=privacy]').last().click();assert.equal(await page.locator('#legal-dialog').evaluate(d=>d.open),true);await page.keyboard.press('Escape');

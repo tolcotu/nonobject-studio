@@ -23,15 +23,6 @@ $$('#main-nav a').forEach(a => a.addEventListener('click', () => { $('.menu-togg
 document.addEventListener('keydown', e => { if(e.key === 'Escape') { $('.menu-toggle').setAttribute('aria-expanded','false'); $('#main-nav').classList.remove('is-open'); } });
 $('#polish-contact').addEventListener('click', () => { setTimeout(() => $('#contact-name').focus({preventScroll:true}), 350); });
 
-const directions = { Detail: 'Bring materials, finishes and meaningful details into focus.', Context: 'Show the product in a setting your buyer can picture themselves in.', Clarity: 'Turn product information into clear, useful reasons to choose it.' };
-$$('[data-direction]').forEach(button => button.addEventListener('click', () => {
- $$('[data-direction]').forEach(b => b.setAttribute('aria-pressed',String(b === button)));
- $('#direction-caption').textContent = directions[button.dataset.direction];
- $('#visual-direction').value = button.dataset.direction;
- $('.story').dataset.direction = button.dataset.direction;
-}));
-$('#direction-cta').addEventListener('click', () => { $('#visual-direction').value = $('[data-direction][aria-pressed=true]').dataset.direction; });
-
 const studies = {
  sieve: { title: 'Precision in the details', category: 'KITCHEN / AMAZON LISTING', image: 'sieve', count: 8, description: 'An eight-frame product gallery for a 20 cm stainless-steel sieve, balancing material details, practical use and clear product information.', direction: 'Detail' },
  baking: { title: 'Made for every bake', category: 'KITCHEN / PRODUCT LISTING', image: 'baking', count: 9, description: 'A nine-frame listing set for a 30 cm baking dish, showing the product in use alongside its form, size and everyday versatility.', direction: 'Context' },
@@ -185,9 +176,16 @@ form.addEventListener('submit', event => {
 
 function initScroll() {
  if(window.ScrollCraft) window.ScrollCraft.mount(document);
- const story=$('.story');const reduce=matchMedia('(prefers-reduced-motion: reduce)');let raf=false;
- function paint(){raf=false;const r=story.getBoundingClientRect();const p=reduce.matches?1:Math.max(0,Math.min(1,-r.top/Math.max(1,r.height-innerHeight)));const assembly=Math.max(0,Math.min(1,(p-.08)/.68));story.style.setProperty('--assembly',assembly.toFixed(4));}
- function schedule(){if(!raf){raf=true;requestAnimationFrame(paint);}}
- addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule);reduce.addEventListener('change',schedule);paint();
+ const hero = $('.editorial-hero');
+ const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+ let raf = false;
+ function paint() {
+  raf = false;
+  const progress = reduce.matches ? 0 : Math.max(0, Math.min(1, -hero.getBoundingClientRect().top / hero.offsetHeight));
+  hero.style.setProperty('--hero-shift', `${(progress * 36).toFixed(2)}px`);
+ }
+ function schedule() { if(!raf) { raf = true; requestAnimationFrame(paint); } }
+ addEventListener('scroll', schedule, {passive:true}); addEventListener('resize', schedule);
+ reduce.addEventListener('change', schedule); paint();
 }
 if(document.readyState==='complete')initScroll();else addEventListener('load',initScroll,{once:true});

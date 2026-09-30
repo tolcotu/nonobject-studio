@@ -3,6 +3,9 @@
 ## Result
 The final production build succeeds. Twelve domain/API tests pass. Browser interaction checks pass against an isolated server and temporary data directory. No real emails or Telegram messages were sent.
 
+## Current editorial refinement
+The latest six-viewport run includes 1440px, 1920px, 834px, 390px, 320px and reduced-motion layouts. All report no overflow, broken images, runtime errors or automated accessibility violations. Hero scroll positions, selected work, research and pricing were captured; desktop and mobile images were visually inspected. The older assembly-stage evidence below describes the earlier design and is retained as history. See `VISUAL-REFINEMENT.md` for current decisions.
+
 ## Visual evidence
 Local visual captures in `docs/screenshots/` include the opening, four intermediate/resolved story positions, gallery and pricing at:
 

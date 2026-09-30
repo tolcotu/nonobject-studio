@@ -1,5 +1,7 @@
 # NONOBJECT: PRD and reference analysis
 
+The current editorial refinement supersedes the original page sequence and bottle interaction described below. See [VISUAL-REFINEMENT.md](VISUAL-REFINEMENT.md) for the simplified journey and new hero art.
+
 ## Brand decision
 NONOBJECT is the chosen working studio name, as authorized by the user. It expresses the service's central idea: a product image should convey more than an isolated object. The orange object and chrome loop make that idea physical. No registered trademark or legal entity is claimed.
 
